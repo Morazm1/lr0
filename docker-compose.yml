@@ -1,0 +1,6 @@
+services:
+  app:
+    build: .
+    image: lr0-app:local
+    container_name: lr0-app
+    restart: unless-stopped
