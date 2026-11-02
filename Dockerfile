@@ -1,11 +1,20 @@
-FROM alpine:3.20
+FROM python:3.12-alpine
 
-RUN addgroup -g 1000 app && adduser -D -u 1000 -G app app
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN addgroup -g 1000 appuser \
+ && adduser -D -u 1000 -G appuser appuser
 
 WORKDIR /app
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh && chown -R app:app /app
 
-USER app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["/app/entrypoint.sh"]
+COPY app.py .
+RUN chown -R appuser:appuser /app
+
+USER appuser
+
+EXPOSE 5000
+CMD ["python", "app.py"]
